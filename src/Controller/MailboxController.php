@@ -3,7 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Mailbox;
-use Symfony\Bridge\Doctrine\ManagerRegistry;
+use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -51,9 +51,10 @@ class MailboxController extends AbstractController
         $username = $data['username'];
         $password = $data['password'];
         $mailbox = $doctrine->getRepository(Mailbox::class)->findOneBy(['username' => $username]);
-        if ( $mailbox != null && PasswordVerificationController::password_verification($password, $mailbox->getPassword())) {
+        if ( $mailbox != null && self::password_verification($password, $mailbox->getPassword())) {
                 return new JsonResponse(['success' => true]);
         }
+
         return new JsonResponse(['success' => false]);
     }
 
@@ -70,12 +71,20 @@ class MailboxController extends AbstractController
         $password = $data['password'];
         $name = $data['name'];
         $mailbox = $doctrine->getRepository(Mailbox::class)->findOneBy(['username' => $username]);
-        if ( $mailbox != null && PasswordVerificationController::password_verification($password, $mailbox->getPassword())) {
+        if ( $mailbox != null && self::password_verification($password, $mailbox->getPassword())) {
             $mailbox->setName($name);
             $doctrine->getManager()->flush();
             return new JsonResponse(['success' => true]);
         }
         return new JsonResponse(['success' => false]);
+    }
+
+    public static function password_verification($password, $hash): bool
+    {
+        $process = new Process(['/bin/doveadm', 'pw', '-s', 'SSHA512', '-p', $password, '-t', $hash]);
+        $process->run();
+
+        return $process->isSuccessful();
     }
 
 }

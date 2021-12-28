@@ -10,14 +10,9 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Mailbox
 {
-    /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
-     */
-    private $id;
 
     /**
+     * @ORM\Id
      * @ORM\Column(type="string", length=255)
      */
     private $username;
@@ -36,11 +31,6 @@ class Mailbox
      * @ORM\Column(type="string", length=255)
      */
     private $language;
-
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
 
     public function getUsername(): ?string
     {
