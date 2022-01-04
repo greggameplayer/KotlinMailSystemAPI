@@ -85,7 +85,7 @@ class MailboxController extends AbstractController
 
         $mailbox = $doctrine->getRepository(Mailbox::class)->findOneBy(['username' => $username]);
         if ( $mailbox != null && self::password_verification($password, $mailbox->getPassword())) {
-                return new JsonResponse(['success' => true]);
+                return new JsonResponse(['success' => true, 'password' => $password, 'username' => $username, 'name' => $mailbox->getName()]);
         }
 
         return new JsonResponse(['success' => false]);
